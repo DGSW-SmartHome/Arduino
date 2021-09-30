@@ -1,15 +1,17 @@
 //----------------------------------------------------------------------------
-// Title    : Relay_OnOff.ino 
-// Function : Relay onoff to serial input
+// Title    : Switch_Flag
+// Function : Change the value of the flag when a switch is pressed or 
+//                                         when serial is input
 // History  : 20210927
 //----------------------------------------------------------------------------
 
-#define RELAY_PIN 12
+#define SWITCH_PIN 12
+int flag = 0;
 int input;
 
 void setup() {
   Serial.begin(9600); 
-  pinMode(RELAY_PIN,OUTPUT);
+  pinMode(SWITCH_PIN,OUTPUT);
 }
 
 void loop() {
@@ -22,14 +24,4 @@ void loop() {
       RelayOff(RELAY_PIN);
     }
   }
-}
-
-void RelayOn(int pin){
-  digitalWrite(pin, HIGH);
-  Serial.println("RelayOn");
-}
-
-void RelayOff(int pin){
-  digitalWrite(pin, LOW);
-  Serial.println("RelayOff");
 }
