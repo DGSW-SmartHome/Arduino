@@ -32,7 +32,7 @@ int communication(){
   int serialValue = 0;
   
   if(Serial.available()){
-    serialread = Serial.read();
+    serialValue = Serial.read();
     if(serialValue == '1'){
       return 1;
     }
