@@ -18,10 +18,10 @@ void loop() {
   if(Serial.available()){
     input = Serial.read();
     if(input == '1'){
-      RelayOn(RELAY_PIN);
+      RelayOn(RELAY_PIN); //이코드에는 없는 함수입니다.
     }
     if(input == '0'){
-      RelayOff(RELAY_PIN);
+      RelayOff(RELAY_PIN);  //이코드에는 없는 함수입니다.
     }
   }
 }
