@@ -4,9 +4,9 @@
 // History  : 20211007
 //----------------------------------------------------------------------------
 
-#define OUTLET_PIN 10
-#define LEDR_PIN 11        //LED to indicate status
-#define LEDG_PIN 12
+#define OUTLET_PIN 13
+#define LEDR_PIN 10        //LED to indicate status
+#define LEDG_PIN 11
 #define BOADRATE 115200
 
 //flag = 1 : Concent ON
@@ -23,20 +23,21 @@ void setup() {
   pinMode(LEDG_PIN, OUTPUT);
 }
 
-void loop() {
-  flag = communication();
+void loop(){
+  //통신과 관련된 코드
+  //-----------------------------
+  if(Serial.available()){
+    value = Serial.read();
+    if(value == '1' && flag == 0)flag = 1;
+    else if(value == '1' && flag == 1)flag = 0;
+  }
+  //-----------------------------
+  
   if(flag == 1)outletOn();
   if(flag == 0)outletOff();
 }
 
-//wifi(시리얼)을 통한 값을 받았을때 동작
-int communication(){  
-  if(Serial.available()){
-    value = Serial.read();
-    if(value == '1')return 1;
-    if(value == '0')return 0;
-  }
-}
+
 
 //콘센트 켜기
 void outletOn(){
