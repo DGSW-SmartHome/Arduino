@@ -1,5 +1,5 @@
 //----------------------------------------------------------------------------
-// Title    : ESP32_ConcentControl
+// Title    : ESP32_OutletControl
 // Function : Outlet control cords for use with ESP32 boards
 // History  : 20211007
 //----------------------------------------------------------------------------
