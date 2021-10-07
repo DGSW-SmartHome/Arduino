@@ -1,6 +1,6 @@
 //----------------------------------------------------------------------------
 // Title    : ESP32_LightControl
-// Function : Lighting control code for loading on the ESP32 board
+// Function : Lighting control code for use on ESP32 boards
 // History  : 20211006
 //----------------------------------------------------------------------------
 
