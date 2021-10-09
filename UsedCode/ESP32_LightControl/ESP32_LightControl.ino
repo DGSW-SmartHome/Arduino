@@ -29,15 +29,13 @@ void loop() {
 
 //wifi(시리얼)을 통한 값을 받았을때 동작
 int communication(){
-  int serialValue = 0;
+  int value = 0;
   
   if(Serial.available()){
-    serialValue = Serial.read();
-    if(serialValue == '1'){
-      return 1;
-    }
-    if(serialValue == '0'){
-      return 0;
+    value = Serial.read();
+    if(value == '1'){
+      if(flag == 0){return 1;}
+      if(flag == 1){return 0;}
     }
   }
 }

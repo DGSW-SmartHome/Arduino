@@ -12,7 +12,6 @@
 //flag = 1 : Concent ON
 //flag = 0 : Concent OFF
 int flag = 0;
-int value = 0;
 
 void setup() {
   Serial.begin(BOADRATE);
@@ -24,20 +23,23 @@ void setup() {
 }
 
 void loop(){
-  //통신과 관련된 코드
-  //-----------------------------
-  if(Serial.available()){
-    value = Serial.read();
-    if(value == '1' && flag == 0)flag = 1;
-    else if(value == '1' && flag == 1)flag = 0;
-  }
-  //-----------------------------
+  flag = communication();
   
   if(flag == 1)outletOn();
   if(flag == 0)outletOff();
 }
 
+int communication(){
+  int value;
 
+  if(Serial.available()){
+    value = Serial.read();
+    if(value == '1'){
+      if(flag == 0){return 1;}
+      if(flag == 1){return 0;}
+    }
+  }
+}
 
 //콘센트 켜기
 void outletOn(){
