@@ -4,10 +4,10 @@
 // --------------------------------------------------------------------
 #include <WiFi.h>
 
-#define AP_ssid "Seven_Labs"                  // WIFI NAME
-#define AP_password "7777Labs"                // WIFI PASSWORD
-#define host "192.168.0.41"                   // server IP Address
-#define port 80                               // server port
+#define AP_SSID "Seven_Labs"                  // WIFI NAME
+#define AP_PSWD "7777Labs"                // WIFI PASSWORD
+#define HOST_IP "192.168.0.41"                   // server IP Address
+#define PORT 80                               // server port
 
 IPAddress server(192,168,0,41);               // server IP Address
 WiFiClient client;                            // 지정된 인터넷 IP 주소 및 포트에 연결할 수 있는 클라이언트 생성
@@ -19,9 +19,9 @@ void setup() {
   Serial.println();
   Serial.println();
   Serial.print("Connecting to ");
-  Serial.println(AP_ssid);
+  Serial.println(AP_SSID);
 
-  WiFi.begin(AP_ssid, AP_password);            // WIFI 연결 시작
+  WiFi.begin(AP_SSID, AP_PSWD);            // WIFI 연결 시작
 
   while (WiFi.status() != WL_CONNECTED) {      // WIFI가 연결이 되어 있지 않다면
       delay(500);
@@ -31,11 +31,11 @@ void setup() {
   Serial.println("");
   Serial.println("WiFi connected");
 
-  if(client.connect(server, 80)) {             // 클라이언트가 연결됐다면
+  if(client.connect(server, PORT)) {             // 클라이언트가 연결됐다면
     Serial.println("server connected");
   }
 
-  client.connect(server, port);                // 지정된 IP 주소와 포트에 연결
+  client.connect(server, PORT);                // 지정된 IP 주소와 포트에 연결
 }
 
 void loop() {
