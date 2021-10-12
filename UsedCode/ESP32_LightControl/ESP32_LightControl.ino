@@ -1,8 +1,8 @@
-//------------------------------------------------------------------
+//-----------------------------------------------------------------
 // Title    : ESP32_LightControl
 // Function : Lighting control code for use on ESP32 boards
 // History  : 20211006
-//------------------------------------------------------------------
+//-----------------------------------------------------------------
 
 #include <WiFi.h>
 
@@ -18,8 +18,9 @@
 #define LIGHT2_PIN 11
 #define SWITCH1_PIN 12
 #define SWITCH2_PIN 13
-//시리얼(true), 와이파이(false) 통신 방식을 설정하는
+//시리얼(true)(int), 와이파이(false)(char) 통신 방식을 설정하는
 #define COM_METHOD false
+#define TYPE char
 
 IPAddress server(192,168,0,41);
 WiFiClient client;
@@ -70,9 +71,8 @@ void loop() {
   if(flag == 3){ lightOn(LIGHT1_PIN);   lightOn(LIGHT2_PIN);  }
 }
 
-//wifi(시리얼)을 통한 값을 받았을때 동작
 int communication(){
-  char value = 0;
+  TYPE value = 0;
 
   //시리얼 통신코드
   if(COM_METHOD == true){
@@ -85,7 +85,7 @@ int communication(){
   //WiFi 통신
   if(COM_METHOD == false){
     if(client.available()){
-      char value = client.read(); //char형
+      value = client.read();  //char형
       Serial.println(value);
     }
   }
