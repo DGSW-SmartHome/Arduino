@@ -4,12 +4,12 @@
 // --------------------------------------------------------------------
 #include <WiFi.h>
 
-#define AP_SSID "Seven_Labs"                  // WIFI NAME
-#define AP_PSWD "7777Labs"                // WIFI PASSWORD
-#define HOST_IP "192.168.0.41"                   // server IP Address
+#define AP_SSID "J2hun"                  // WIFI NAME
+#define AP_PSWD "j2hun1315"                // WIFI PASSWORD
+#define HOST_IP "192.168.94.203"                   // server IP Address
 #define PORT 80                               // server port
 
-IPAddress server(192,168,0,41);               // server IP Address
+IPAddress server(192,168,94,203);               // server IP Address
 WiFiClient client;                            // 지정된 인터넷 IP 주소 및 포트에 연결할 수 있는 클라이언트 생성
 
 void setup() {

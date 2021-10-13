@@ -9,20 +9,20 @@
 //시리얼 통신의 보드레이트설정
 #define BOADRATE 115200
 //와이파이 통신에 필요한 정보
-#define AP_SSID "Seven_Labs"
-#define AP_PSWD "7777Labs"
-#define HOST_IP "192.168.0.41"
+#define AP_SSID "J2hun"
+#define AP_PSWD "j2hun1315"
+#define HOST_IP "192.168.94.203"
 #define PORT 80
 //센서들의 핀설정
-#define LIGHT1_PIN 10
-#define LIGHT2_PIN 11
-#define SWITCH1_PIN 12
-#define SWITCH2_PIN 13
+#define LIGHT1_PIN 12
+#define LIGHT2_PIN 13
+#define SWITCH1_PIN 14
+#define SWITCH2_PIN 15
 //시리얼(true)(int), 와이파이(false)(char) 통신 방식을 설정하는
 #define COM_METHOD false
 #define TYPE char
 
-IPAddress server(192,168,0,41);
+IPAddress server(192,168,94,203);
 WiFiClient client;
 
 //flag = 0 : LIGHT1 OFF LIGHT2 OFF
@@ -52,10 +52,10 @@ void setup() {
   
   client.connect(server, PORT);
   
-  pinMode(LIGHT1_PIN, OUTPUT);
-  pinMode(SWITCH1_PIN, INPUT);
-  pinMode(LIGHT2_PIN, OUTPUT);
-  pinMode(SWITCH2_PIN, INPUT);
+//  pinMode(LIGHT1_PIN, OUTPUT);
+//  pinMode(SWITCH1_PIN, INPUT);
+//  pinMode(LIGHT2_PIN, OUTPUT);
+//  pinMode(SWITCH2_PIN, INPUT);
 }
 
 void wifiSetting(){
@@ -114,9 +114,11 @@ int switchFlag(){
 //조명 켜기
 void lightOn(int pin){
   digitalWrite(pin, HIGH);
+  Serial.println("조명 ON");
 }
 
 //조명 끄기
 void lightOff(int pin){
   digitalWrite(pin, LOW);
+  Serial.println("조명 OFF");
 }

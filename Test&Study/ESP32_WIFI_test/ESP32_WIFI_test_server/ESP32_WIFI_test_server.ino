@@ -4,11 +4,12 @@
 // --------------------------------------------------------------------
 #include <WiFi.h>
 
-#define AP_ssid "Seven_Labs"                  // WIFI NAME
-#define AP_password "7777Labs"                // WIFI PASSWORD
+#define AP_SSID "J2hun"                  // WIFI NAME
+#define AP_PSWD "j2hun1315"                // WIFI PASSWORD
+#define PORT 80
 int status = WL_IDLE_STATUS;
 
-WiFiServer server(80);                        // 지정된 포트에서 들어오는 연결을 수신 대기하는 서버 생성
+WiFiServer server(PORT);                        // 지정된 포트에서 들어오는 연결을 수신 대기하는 서버 생성
 
 void setup() {
   Serial.begin(115200);
@@ -17,9 +18,9 @@ void setup() {
   Serial.println();
   Serial.println();
   Serial.print("Connecting to ");
-  Serial.println(AP_ssid);
+  Serial.println(AP_SSID);
 
-  WiFi.begin(AP_ssid, AP_password);            // WIFI 연결 시작
+  WiFi.begin(AP_SSID, AP_PSWD);            // WIFI 연결 시작
 
   while (WiFi.status() != WL_CONNECTED) {      // WIFI가 연결이 되어 있지 않다면
       delay(500);
