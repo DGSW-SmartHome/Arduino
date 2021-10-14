@@ -4,10 +4,12 @@
 // --------------------------------------------------------------------
 #include <WiFi.h>
 
-#define AP_SSID "J2hun"                  // WIFI NAME
-#define AP_PSWD "j2hun1315"                // WIFI PASSWORD
+#define AP_SSID "lab10"                  // WIFI NAME
+#define AP_PSWD "1234567890"                // WIFI PASSWORD
 #define PORT 80
 int status = WL_IDLE_STATUS;
+int flag = 0;
+//char cmd = " ";
 
 WiFiServer server(PORT);                        // 지정된 포트에서 들어오는 연결을 수신 대기하는 서버 생성
 
@@ -44,9 +46,15 @@ void loop() {
 
     if(client.connected()){                       // 클라이언트가 연결되었는가?
       Serial.println("Connected to client");
-      client.write("Connected to server");        // 클라이언트에 메세지 전달 - 수정예정
+      String recvStr = "Connected to client";
+      client.write((char*)recvStr.c_str(), recvStr.length());
     }
   }
 //  client.stop();                                // 클라이언트 닫기
   delay(1000);
 }
+
+//void command() {
+//
+//  
+//}

@@ -9,9 +9,9 @@
 //시리얼 통신의 보드레이트설정
 #define BOADRATE 115200
 //와이파이 통신에 필요한 정보
-#define AP_SSID "J2hun"
-#define AP_PSWD "j2hun1315"
-#define HOST_IP "192.168.94.203"
+#define AP_SSID "lab10"
+#define AP_PSWD "1234567890"
+#define HOST_IP "192.168.0.3"
 #define PORT 80
 //센서들의 핀설정
 #define LIGHT1_PIN 12
@@ -22,7 +22,7 @@
 #define COM_METHOD false
 #define TYPE char
 
-IPAddress server(192,168,94,203);
+IPAddress server(192,168,0,3);
 WiFiClient client;
 
 //flag = 0 : LIGHT1 OFF LIGHT2 OFF
@@ -58,9 +58,9 @@ void setup() {
 //  pinMode(SWITCH2_PIN, INPUT);
 }
 
-void wifiSetting(){
-  
-}
+//void wifiSetting(){
+//  
+//}
 
 void loop() {
   flag = communication();

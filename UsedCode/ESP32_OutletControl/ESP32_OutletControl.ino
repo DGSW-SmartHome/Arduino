@@ -9,9 +9,9 @@
 //시리얼 통신의 보드레이트설정
 #define BOADRATE 115200
 //와이파이 통신에 필요한 정보
-#define AP_SSID "Seven_Labs"
-#define AP_PSWD "7777Labs"
-#define HOST_IP "192.168.0.41"
+#define AP_SSID "lab10"
+#define AP_PSWD "1234567890"
+#define HOST_IP "192.168.0.3"
 #define PORT 80
 //센서들의 핀설정
 #define OUTLET_PIN 13
@@ -19,14 +19,15 @@
 #define LEDG_PIN 11
 //시리얼(true)(int), 와이파이(false)(char) 통신 방식을 설정하는
 #define COM_METHOD false
-#define TYPE char
+#define TYPE byte
 
-IPAddress server(192,168,0,41);
+IPAddress server(192,168,0,3);
 WiFiClient client;
 
 //flag = 1 : Concent ON
 //flag = 0 : Concent OFF
 int flag = 0;
+char buf[255];
 
 void setup() {
   Serial.begin(BOADRATE);
@@ -56,13 +57,16 @@ void setup() {
 
 void loop(){
   flag = communication();
-  
+//  Serial.println(flag);
+
   if(flag == 1)outletOn();
   if(flag == 0)outletOff();
+
+  delay(100);
 }
 
 int communication(){
-  TYPE value = 0;
+  TYPE value;
 
   //시리얼 통신코드
   if(COM_METHOD == true){
@@ -71,13 +75,20 @@ int communication(){
       return value;
     }
   }
-
+  
   //WiFi 통신
   if(COM_METHOD == false){
     if(client.available()){
-      value = client.read();  //char형
-      Serial.println(value);
+        String buf = client.readStringUntil('\r');
+        Serial.println(buf);
+
+//      String to charArray code 
+//      String buf = client.readStringUntil('\r');
+//      Serial.println(buf);
+//      
+//      char cmd = buf.toCharArray()
     }
+    return 0;
   }
 }
 
