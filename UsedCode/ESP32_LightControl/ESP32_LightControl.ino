@@ -11,7 +11,7 @@
 //와이파이 통신에 필요한 정보
 #define AP_SSID "lab10"
 #define AP_PSWD "1234567890"
-#define HOST_IP "192.168.0.3"
+#define HOST_IP "192.168.0.4"
 #define PORT 80
 //센서들의 핀설정
 #define LIGHT1_PIN 12
@@ -22,14 +22,14 @@
 #define COM_METHOD false
 #define TYPE char
 
-IPAddress server(192,168,0,3);
+IPAddress server(192,168,0,4);
 WiFiClient client;
 
 //flag = 0 : LIGHT1 OFF LIGHT2 OFF
 //flag = 1 : LIGHT1 ON  LIGHT2 OFF
 //flag = 2 : LIGHT1 OFF LIGHT2 ON
 //flag = 3 : LIGHT1 ON  LIGHT2 ON
-int flag = 0; 
+int flag = -1; 
 
 void setup() {
   Serial.begin(BOADRATE);
@@ -52,10 +52,10 @@ void setup() {
   
   client.connect(server, PORT);
   
-//  pinMode(LIGHT1_PIN, OUTPUT);
-//  pinMode(SWITCH1_PIN, INPUT);
-//  pinMode(LIGHT2_PIN, OUTPUT);
-//  pinMode(SWITCH2_PIN, INPUT);
+  pinMode(LIGHT1_PIN, OUTPUT);
+  pinMode(SWITCH1_PIN, INPUT);
+  pinMode(LIGHT2_PIN, OUTPUT);
+  pinMode(SWITCH2_PIN, INPUT);
 }
 
 //void wifiSetting(){
@@ -63,12 +63,19 @@ void setup() {
 //}
 
 void loop() {
-  flag = communication();
-  flag = switchFlag();
+  if(client.available()){
+    flag = communication(); 
+    Serial.println(flag);
+  }
+//  if(digitalRead(SWITCH1_PIN) == HIGH){
+//    flag = switchFlag();
+//  }
+  
   if(flag == 0){ lightOff(LIGHT1_PIN);  lightOff(LIGHT2_PIN); }
   if(flag == 1){ lightOn(LIGHT1_PIN);   lightOff(LIGHT2_PIN); }
   if(flag == 2){ lightOff(LIGHT1_PIN);  lightOn(LIGHT2_PIN);  }
   if(flag == 3){ lightOn(LIGHT1_PIN);   lightOn(LIGHT2_PIN);  }
+
 }
 
 int communication(){
@@ -85,8 +92,19 @@ int communication(){
   //WiFi 통신
   if(COM_METHOD == false){
     if(client.available()){
-      value = client.read();  //char형
-      Serial.println(value);
+//      String to charArray code 
+      String buf = client.readStringUntil('\r');
+      Serial.println(buf);
+      
+      String cmd = buf.substring(0,2);
+      if(cmd == "L1"){
+        String str = buf.substring(2,3);
+        if(str == "0") return 0;
+        else if(str == "1") return 1;
+        else if(str == "2") return 2;
+        else if(str == "3") return 3;
+      }
+      return -1;
     }
   }
 }
@@ -114,11 +132,13 @@ int switchFlag(){
 //조명 켜기
 void lightOn(int pin){
   digitalWrite(pin, HIGH);
-  Serial.println("조명 ON");
+  Serial.print(pin);
+  Serial.println(" : 조명 ON");
 }
 
 //조명 끄기
 void lightOff(int pin){
   digitalWrite(pin, LOW);
-  Serial.println("조명 OFF");
+  Serial.print(pin);
+  Serial.println(" : 조명 OFF");
 }
