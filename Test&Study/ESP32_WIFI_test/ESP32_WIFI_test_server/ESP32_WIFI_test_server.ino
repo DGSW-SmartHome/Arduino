@@ -4,14 +4,19 @@
 // --------------------------------------------------------------------
 #include <WiFi.h>
 
+// 시리얼 통신의 보드레이트 설정
+#define BOADRATE 115200
+
+// 와이파이 통신에 필요한 정보
 #define AP_SSID "lab10"                  // WIFI NAME
 #define AP_PSWD "1234567890"                // WIFI PASSWORD
 #define PORT 80
 int status = WL_IDLE_STATUS;
-int flag = 0;
 
 WiFiServer server(PORT);                        // 지정된 포트에서 들어오는 연결을 수신 대기하는 서버 생성
-WiFiClient client;
+//WiFiClient client;
+
+String cmd;
 
 void setup() {
   Serial.begin(115200);
@@ -27,39 +32,41 @@ void setup() {
   while (WiFi.status() != WL_CONNECTED) {      // WIFI가 연결이 되어 있지 않다면
     delay(500);
     Serial.print(".");
-  }
-
-  server.begin();                               // 서버 시작
-  Serial.println("");
-  Serial.println("Server Start!");
+  }  
   Serial.println("");
   Serial.println("WiFi connected");
+
+  server.begin();                               // 서버 시작
+  
+  Serial.println("");
+  Serial.println("Server Start!");
   Serial.print("IP address: ");
   Serial.println(WiFi.localIP());               // 와이파이 IP 주소 출력
-
 }
-
+WiFiClient client;
 void loop() {
-  client = server.available();        // 서버에 연결되어 있는 클라이언트를 가져옴
-
-  if (client.connected()) {                     // 클라이언트가 연결되었는가?
-    commandSend();
+  client = server.available();
+  
+  if(client){
+    Serial.println("Connected to client");
+    while(client.connected()) {                     // 클라이언트가 연결되었는가?
+//      client.flush();
+      command();
+      client.write((char*)cmd.c_str(), cmd.length());
+      client.write('\r');
+    
+      if(client.available()){
+        recvStat();
+      }
+    }
+//    client.stop();
+//    Serial.println("Client disconnected.");
   }
-
-  if(client.available()){
-    recvStat();
-  }
-
-  if(!client.connected()){
-    client.stop();                                // 클라이언트 닫기
-  }
-  delay(1000);
+  delay(500);
 }
 
-void commandSend() {
-  Serial.println("Connected to client");
-  String cmd = "O1-0";
-  client.write((char*)cmd.c_str(), cmd.length());
+void command() {
+  cmd = "O1-0";
 }
 
 void recvStat() {

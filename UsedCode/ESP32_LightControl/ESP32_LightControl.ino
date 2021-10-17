@@ -3,24 +3,25 @@
 // Function : Lighting control code for use on ESP32 boards
 // History  : 20211006
 //-----------------------------------------------------------------
+//시리얼(true)(int), 와이파이(false)(char) 통신 방식을 설정하는
+#define DEBUG false
 
 #include <WiFi.h>
 
 //시리얼 통신의 보드레이트설정
 #define BOADRATE 115200
+
 //와이파이 통신에 필요한 정보
 #define AP_SSID "lab10"
 #define AP_PSWD "1234567890"
 #define HOST_IP "192.168.0.4"
 #define PORT 80
+
 //센서들의 핀설정
 #define LIGHT1_PIN 12
 #define LIGHT2_PIN 13
 #define SWITCH1_PIN 14
 #define SWITCH2_PIN 15
-//시리얼(true)(int), 와이파이(false)(char) 통신 방식을 설정하는
-#define COM_METHOD false
-#define TYPE char
 
 IPAddress server(192,168,0,4);
 WiFiClient client;
@@ -48,41 +49,41 @@ void setup() {
   Serial.println("");
   Serial.println("WiFi connected");
   
-  if(client.connect(server, PORT)){Serial.println("server connected");}
-  
-  client.connect(server, PORT);
-  
   pinMode(LIGHT1_PIN, OUTPUT);
   pinMode(SWITCH1_PIN, INPUT);
   pinMode(LIGHT2_PIN, OUTPUT);
   pinMode(SWITCH2_PIN, INPUT);
 }
 
-//void wifiSetting(){
-//  
-//}
-
 void loop() {
-  if(client.available()){
+  if(client.connect(server, PORT)){
+    
+    Serial.println("server connected");
+    
     flag = communication(); 
     Serial.println(flag);
-  }
-//  if(digitalRead(SWITCH1_PIN) == HIGH){
-//    flag = switchFlag();
-//  }
-  
-  if(flag == 0){ lightOff(LIGHT1_PIN);  lightOff(LIGHT2_PIN); }
-  if(flag == 1){ lightOn(LIGHT1_PIN);   lightOff(LIGHT2_PIN); }
-  if(flag == 2){ lightOff(LIGHT1_PIN);  lightOn(LIGHT2_PIN);  }
-  if(flag == 3){ lightOn(LIGHT1_PIN);   lightOn(LIGHT2_PIN);  }
 
+    //  if(digitalRead(SWITCH1_PIN) == HIGH){
+    //    flag = switchFlag();
+    //  }
+    
+    if(flag == 0){ lightOff(LIGHT1_PIN);  lightOff(LIGHT2_PIN); }
+    if(flag == 1){ lightOn(LIGHT1_PIN);   lightOff(LIGHT2_PIN); }
+    if(flag == 2){ lightOff(LIGHT1_PIN);  lightOn(LIGHT2_PIN);  }
+    if(flag == 3){ lightOn(LIGHT1_PIN);   lightOn(LIGHT2_PIN);  }
+
+    sendStat();
+    client.flush();
+  }
+  
+  delay(1000);
 }
 
 int communication(){
-  TYPE value = 0;
+  int value = 0;
 
   //시리얼 통신코드
-  if(COM_METHOD == true){
+  if(DEBUG == true){
     if(Serial.available()){
       value = Serial.read();  //int형
       return value;
@@ -90,7 +91,7 @@ int communication(){
   }
 
   //WiFi 통신
-  if(COM_METHOD == false){
+  if(DEBUG == false){
     if(client.available()){
 //      String to charArray code 
       String buf = client.readStringUntil('\r');
@@ -107,6 +108,14 @@ int communication(){
       return -1;
     }
   }
+}
+
+// Light 상태 전송
+void sendStat(){
+  String str = "L1-" + String(flag);
+  client.write((char*)str.c_str(), str.length());
+  client.write('\r');
+  Serial.println(str);
 }
 
 //스위치 눌렸을 때 동작
