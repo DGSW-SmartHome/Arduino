@@ -99,7 +99,7 @@ int communication(){
       
       String cmd = buf.substring(0,2);
       if(cmd == "L1"){
-        String str = buf.substring(2,3);
+        String str = buf.substring(3,4);
         if(str == "0") return 0;
         else if(str == "1") return 1;
         else if(str == "2") return 2;
