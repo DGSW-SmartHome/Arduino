@@ -18,8 +18,8 @@
 WiFiServer server(PORT);              // 지정된 포트에서 들어오는 연결을 수신 대기하는 서버 생성
 WiFiClient client;
 
-String recvCmd = null;
-String recvStat = null;
+String recvCmdmsg = "";
+String recvStatmsg = "";
 int light[6] = { 0,0,0,0,0,0 };
 
 void setup() {
@@ -51,7 +51,7 @@ void loop() {
   delay(100);
 }
 
-//WIFI Connect & Server Connect function
+// WIFI Connect & Server Connect function
 void set() {
   Serial.println();
   Serial.print("Conneting to ");
@@ -77,27 +77,27 @@ void set() {
 
 // 아두이노에게 제어메세지 전송
 void sendCmd() {
-  client.write((char*)recvCmd.c_str(), recvCmd.length());
+  client.write((char*)recvCmdmsg.c_str(), recvCmdmsg.length());
   client.write('\r');
 }
 
 // 아두이노에서 상태 메세지 받기
 void recvStat() {
-  recvStat = client.readStringUntil('\r');
-  Serial.println(recvStat);
+  recvStatmsg = client.readStringUntil('\r');
+  Serial.println(recvStatmsg);
 
-  if(cmd.substring(0,2) == "L1") light[0] = cmd.substring(3,4).toInt();
-  else if(cmd.substring(0,2) == "L2") light[1] = cmd.substring(3,4).toInt();
-  else if(cmd.substring(0,2) == "L3") light[2] = cmd.substring(3,4).toInt();
-  else if(cmd.substring(0,2) == "L4") light[3] = cmd.substring(3,4).toInt();
-  else if(cmd.substring(0,2) == "L5") light[4] = cmd.substring(3,4).toInt();
-  else if(cmd.substring(0,2) == "L6") light[5] = cmd.substring(3,4).toInt();
+  if(recvStatmsg.substring(0,2) == "L1") light[0] = recvStatmsg.substring(3,4).toInt();
+  else if(recvStatmsg.substring(0,2) == "L2") light[1] = recvStatmsg.substring(3,4).toInt();
+  else if(recvStatmsg.substring(0,2) == "L3") light[2] = recvStatmsg.substring(3,4).toInt();
+  else if(recvStatmsg.substring(0,2) == "L4") light[3] = recvStatmsg.substring(3,4).toInt();
+  else if(recvStatmsg.substring(0,2) == "L5") light[4] = recvStatmsg.substring(3,4).toInt();
+  else if(recvStatmsg.substring(0,2) == "L6") light[5] = recvStatmsg.substring(3,4).toInt();
 }
 
 // 라즈베리파이에서 제어메세지 받기
 void recvCmd() {
-  recvCmdMsg = Serial.readStringUntil('\r');
-  Serial.println(recvCmdMsg);
+  recvCmdmsg = Serial.readStringUntil('\r');
+  Serial.println(recvCmdmsg);
 }
 
 // 라즈베리파이에게 상태 메세지 전송
