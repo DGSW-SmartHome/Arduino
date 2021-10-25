@@ -1,6 +1,6 @@
 #define BAUDRATE 115200
 
-#define pin 8
+#define pin 4
 
 int pulse = 0;
 float ugm3 = 0;
@@ -17,3 +17,19 @@ void loop() {
   Serial.println("\tug/m3");
   delay(100);
 }
+
+//
+//
+//void setup(){
+//
+//  Serial.begin(115200);
+//
+//  pinMode(4,INPUT);
+//
+//}
+//
+//void loop(){
+//
+//  Serial.println(digitalRead(4));
+//
+//}

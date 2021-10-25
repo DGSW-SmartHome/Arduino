@@ -9,7 +9,6 @@
 #define RECV_PIN 2
 
 IRrecv irrecv(RECV_PIN);
-//decode_results results;
 
 void setup() {
   Serial.begin(BOADRATE);
@@ -45,7 +44,7 @@ void loop() { // ReceiveDump 예제를 참고했음.
 
       irrecv.compensateAndPrintIRResultAsPronto(&Serial);
     }
-    delay(1000);
+    delay(500);
   }
     irrecv.resume();
 }

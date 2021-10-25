@@ -1,9 +1,9 @@
-#include <DHT.h>
+#include "DHT.h"
 
 #define BAUDRATE 115200
 
-#define pin 2
-DHT dgt = DHT(pin, DHT11);
+#define PIN 4
+DHT dht(PIN, DHT11);
 
 void setup() {
   Serial.begin(BAUDRATE);
@@ -12,11 +12,13 @@ void setup() {
 }
 
 void loop() {
-  int humidity = dgt.readHumidity();
-  int temperature = dht.readTemperature();
+  float humidity = dht.readHumidity();
+  float temperature = dht.readTemperature();
 
   Serial.print("humidity: ");
   Serial.print(humidity);
   Serial.print(" / temperature: ");
   Serial.println(temperature);
+
+  delay(1000);
 }
