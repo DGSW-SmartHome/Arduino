@@ -6,26 +6,50 @@
 #define DEBUG 1
 
 // 시리얼 통신의 보드레이트 설정
-#define BOADRATE 115200
+#define BAUDRATE 115200
 
 #include <WiFi.h>
+#include <LiquidCrystal_I2C.h>
+#include <PMsensor.h>
+#include "DHT.h"
 
 // AP 통신에 필요한 정보
 #define AP_SSID "lab10"               // WIFI NAME
 #define AP_PSWD "1234567890"          // WIFI PASSWORD
 #define PORT 80                       // Server PORT
 
+// dust Sensor Pin
+#define DUST_PIN 32
+#define LED_PIN 4
+
+// DHT11 Sensor Pin
+#define DHT_PIN 0
+
+// lcd 설정
+#define VERTICAL 2                    
+#define HORIZONTAL 16                 
+
+
 WiFiServer server(PORT);              // 지정된 포트에서 들어오는 연결을 수신 대기하는 서버 생성
 WiFiClient client;
+
+LiquidCrystal_I2C lcd(0x27, HORIZONTAL, VERTICAL);
+
+PMsensor PM;
+
+DHT dht(DHT_PIN, DHT11);
 
 String recvCmdmsg = "";
 String recvStatmsg = "";
 int light[6] = { 0,0,0,0,0,0 };
+float finedust = 0;
 
 void setup() {
-  Serial.begin(BOADRATE);
+  Serial.begin(BAUDRATE);
 
-  set();
+  wifiSetting();
+  setting();
+  
 }
 
 void loop() {
@@ -47,12 +71,13 @@ void loop() {
   }
 
   sendStat();
-
+  displayOn();
+  
   delay(100);
 }
 
 // WIFI Connect & Server Connect function
-void set() {
+void wifiSetting() {
   Serial.println();
   Serial.print("Conneting to ");
   Serial.println(AP_SSID);
@@ -73,6 +98,16 @@ void set() {
   Serial.println("Server Start!");
   Serial.print("IP address: ");
   Serial.println(WiFi.localIP());
+}
+
+// Lcd & dust sensor & DHT11 sensor Setting
+void setting() {
+  lcd.init();
+  lcd.backlight();
+
+  PM.init(LED_PIN, DUST_PIN);
+
+  dht.begin();
 }
 
 // 아두이노에게 제어메세지 전송
@@ -103,7 +138,7 @@ void recvCmd() {
 // 라즈베리파이에게 상태 메세지 전송
 void sendStat() {
   // finedust 
-  int finedust = 0;
+  finedust = PM.read(0.1);
   
 #ifdef DEBUG
   Serial.print("finedust: ");
@@ -143,4 +178,24 @@ void sendStat() {
   Serial.write((byte*)&light[5], 1);
   Serial.write('\n');
 #endif
+}
+
+// Temperature and humidity, fine dust display on LCD
+void displayOn() {
+  lcd.clear();
+
+  // fine dust print
+  String dustStr = String(finedust) + " ug/m3";
+  
+  lcd.setCursor(0,0);
+  lcd.print(str);
+
+  // temperature & humidity print
+  float temperature = dht.readTemperature();
+  float humidity = dht.readHumidity();
+
+  String dhtStr = String(temperature) + " °C" + String(humidity) + " %";
+
+  lcd.setCursor(0,1);
+  lcd.print(dhtStr);
 }

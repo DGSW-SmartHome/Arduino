@@ -10,8 +10,13 @@ void setup() {
 }
 
 void loop() {
+  float dust = 3.123;
+
+  String str = String(dust) + "ug/m3";
   lcd.setCursor(0,0);
-  lcd.print("Hello, World!");
+  lcd.print(str);
+//  lcd.setCursor(6,0);
+//  lcd.print("ug/m3");
   delay(1000);
   lcd.clear();
 }

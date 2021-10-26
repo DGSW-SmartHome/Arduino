@@ -1,35 +1,29 @@
-#define BAUDRATE 115200
+#include <PMsensor.h>
 
-#define pin 4
 
-int pulse = 0;
-float ugm3 = 0;
+PMsensor PM;
 
 void setup() {
-  Serial.begin(BAUDRATE);
-  pinMode(pin, INPUT);
+  Serial.begin(115200);
+
+  PM.init(4, 32);
+  
 }
 
 void loop() {
-  pulse = pulseIn(pin, LOW);
-  ugm3 = (pulse-1400) / 14.0;
-  Serial.print(ugm3, 4);
-  Serial.println("\tug/m3");
-  delay(100);
-}
 
-//
-//
-//void setup(){
-//
-//  Serial.begin(115200);
-//
-//  pinMode(4,INPUT);
-//
-//}
-//
-//void loop(){
-//
-//  Serial.println(digitalRead(4));
-//
-//}
+  float pm = PM.read(0.1);
+//  if ((err = PM.read(&pm, true, 0.4)) != PMsensorErrSuccess)
+//  {
+//    Serial.print("Error = ");
+//    Serial.println(err);
+//    delay(3000);
+//    return;
+//  }
+
+  Serial.print("PM : ");
+  Serial.print(pm);
+  Serial.println(" ug/m^3");
+
+  delay(1000);
+}
