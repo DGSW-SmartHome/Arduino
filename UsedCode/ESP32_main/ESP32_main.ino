@@ -3,8 +3,7 @@
 // Describe : ESP32 메인/서버 코드
 // History : 2021-10-17
 // -------------------------------------------------
-#define DEBUG 1
-
+//#define DEBUG 1
 // 시리얼 통신의 보드레이트 설정
 #define BAUDRATE 115200
 
@@ -41,7 +40,7 @@ DHT dht(DHT_PIN, DHT11);
 
 String recvCmdmsg = "";
 String recvStatmsg = "";
-int light[6] = { 0,0,0,0,0,0 };
+int light[3] = { 0,0,0 };
 float finedust = 0;
 
 void setup() {
@@ -59,21 +58,23 @@ void loop() {
     Serial.println("Connected to Client");
     while(client.connected()) {
       sendCmd();
-
+      
       if(client.available()) {
         recvStat();
       }
+      
+      sendStat();
+      delay(100);
     }
   }
 
-  if(Serial.available()){
-    recvCmd();
-  }
-
-  sendStat();
   displayOn();
   
   delay(100);
+}
+
+void serialEvent(){
+  recvCmd();
 }
 
 // WIFI Connect & Server Connect function
@@ -124,9 +125,6 @@ void recvStat() {
   if(recvStatmsg.substring(0,2) == "L1") light[0] = recvStatmsg.substring(3,4).toInt();
   else if(recvStatmsg.substring(0,2) == "L2") light[1] = recvStatmsg.substring(3,4).toInt();
   else if(recvStatmsg.substring(0,2) == "L3") light[2] = recvStatmsg.substring(3,4).toInt();
-  else if(recvStatmsg.substring(0,2) == "L4") light[3] = recvStatmsg.substring(3,4).toInt();
-  else if(recvStatmsg.substring(0,2) == "L5") light[4] = recvStatmsg.substring(3,4).toInt();
-  else if(recvStatmsg.substring(0,2) == "L6") light[5] = recvStatmsg.substring(3,4).toInt();
 }
 
 // 라즈베리파이에서 제어메세지 받기
@@ -138,7 +136,7 @@ void recvCmd() {
 // 라즈베리파이에게 상태 메세지 전송
 void sendStat() {
   // finedust 
-  finedust = PM.read(0.1);
+  finedust = 0;
   
 #ifdef DEBUG
   Serial.print("finedust: ");
@@ -148,7 +146,7 @@ void sendStat() {
   Serial.write((byte*)&finedust, 4);
 #endif
 
-
+  
   // light stat
 #ifdef DEBUG
   Serial.print(" / light1: ");
@@ -157,12 +155,7 @@ void sendStat() {
   Serial.print(light[1]);
   Serial.print(" / light3: ");
   Serial.print(light[2]);
-  Serial.print(" / light4: ");
-  Serial.print(light[3]);
-  Serial.print(" / light5: ");
-  Serial.print(light[4]);
-  Serial.print(" / light6: ");
-  Serial.println(light[5]);
+  Serial.println();
 #else
   Serial.write("L1");
   Serial.write((byte*)&light[0], 1);
@@ -170,12 +163,6 @@ void sendStat() {
   Serial.write((byte*)&light[1], 1);
   Serial.write("L3");
   Serial.write((byte*)&light[2], 1);
-  Serial.write("L4");
-  Serial.write((byte*)&light[3], 1);
-  Serial.write("L5");
-  Serial.write((byte*)&light[4], 1);
-  Serial.write("L6");
-  Serial.write((byte*)&light[5], 1);
   Serial.write('\n');
 #endif
 }
@@ -188,7 +175,7 @@ void displayOn() {
   String dustStr = String(finedust) + " ug/m3";
   
   lcd.setCursor(0,0);
-  lcd.print(str);
+  lcd.print(dustStr);
 
   // temperature & humidity print
   float temperature = dht.readTemperature();

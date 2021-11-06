@@ -14,7 +14,7 @@
 //와이파이 통신에 필요한 정보
 #define AP_SSID "lab10"
 #define AP_PSWD "1234567890"
-#define HOST_IP "192.168.0.4"
+#define HOST_IP "192.168.0.3"
 #define PORT 80
 
 //센서들의 핀설정
@@ -25,7 +25,7 @@
 //Client Cmd
 #define CLIENT "O1"
 
-IPAddress server(192,168,0,4);
+IPAddress server(192,168,0,3);
 WiFiClient client;
 
 //flag = -1 : 반환값 없음
@@ -64,6 +64,8 @@ void loop(){
   
     if(flag == 1) outletOn();
     if(flag == 0) outletOff();
+
+    client.flush();
   }
   delay(1000);
 }

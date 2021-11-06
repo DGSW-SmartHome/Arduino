@@ -14,7 +14,7 @@
 //와이파이 통신에 필요한 정보
 #define AP_SSID "lab10"
 #define AP_PSWD "1234567890"
-#define HOST_IP "192.168.0.4"
+#define HOST_IP "192.168.0.3"
 #define PORT 80
 
 //센서들의 핀설정
@@ -23,7 +23,7 @@
 #define SWITCH1_PIN 14
 #define SWITCH2_PIN 15
 
-IPAddress server(192,168,0,4);
+IPAddress server(192,168,0,3);
 WiFiClient client;
 
 //flag = 0 : LIGHT1 OFF LIGHT2 OFF
@@ -53,16 +53,16 @@ void setup() {
   pinMode(SWITCH1_PIN, INPUT);
   pinMode(LIGHT2_PIN, OUTPUT);
   pinMode(SWITCH2_PIN, INPUT);
+  
 }
 
 void loop() {
-  if(client.connect(server, PORT)){
-    
+  if(client.connect(server, PORT)) {
     Serial.println("server connected");
-    
+
     flag = communication(); 
     Serial.println(flag);
-
+    
     //  if(digitalRead(SWITCH1_PIN) == HIGH){
     //    flag = switchFlag();
     //  }
@@ -71,12 +71,12 @@ void loop() {
     if(flag == 1){ lightOn(LIGHT1_PIN);   lightOff(LIGHT2_PIN); }
     if(flag == 2){ lightOff(LIGHT1_PIN);  lightOn(LIGHT2_PIN);  }
     if(flag == 3){ lightOn(LIGHT1_PIN);   lightOn(LIGHT2_PIN);  }
-
+    
     sendStat();
     client.flush();
-  }
   
-  delay(1000);
+  }
+  delay(500);
 }
 
 int communication(){
@@ -95,11 +95,11 @@ int communication(){
     if(client.available()){
 //      String to charArray code 
       String buf = client.readStringUntil('\r');
-      Serial.println(buf);
-      
+
       String cmd = buf.substring(0,2);
       if(cmd == "L1"){
         String str = buf.substring(3,4);
+        Serial.println(str);
         if(str == "0") return 0;
         else if(str == "1") return 1;
         else if(str == "2") return 2;
@@ -112,10 +112,13 @@ int communication(){
 
 // Light 상태 전송
 void sendStat(){
-  String str = "L1-" + String(flag);
-  client.write((char*)str.c_str(), str.length());
-  client.write('\r');
-  Serial.println(str);
+  if(flag != -1) {
+    String str = "L1-" + String(flag);
+    client.write((char*)str.c_str(), str.length());
+    client.write('\r');
+    Serial.println(str);
+    flag = -1;
+  }
 }
 
 //스위치 눌렸을 때 동작
