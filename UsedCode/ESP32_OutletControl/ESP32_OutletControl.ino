@@ -1,7 +1,7 @@
 //------------------------------------------------------------------
 // Title    : ESP32_OutletControl
 // Function : Outlet control cords for use with ESP32 boards
-// History  : 20211007
+// History  : 20211107
 //------------------------------------------------------------------
 //시리얼(true), 와이파이(false) 통신 방식을 설정하는
 #define DEBUG false

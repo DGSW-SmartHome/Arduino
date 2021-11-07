@@ -3,8 +3,6 @@
 // Function : Lighting control code for use on ESP32 boards
 // History  : 20211006
 //-----------------------------------------------------------------
-//시리얼(true)(int), 와이파이(false)(char) 통신 방식을 설정하는
-#define DEBUG false
 
 #include <WiFi.h>
 
@@ -20,8 +18,8 @@
 //센서들의 핀설정
 #define LIGHT1_PIN 12
 #define LIGHT2_PIN 13
-#define SWITCH1_PIN 14
-#define SWITCH2_PIN 15
+#define SWITCH1_PIN 16
+#define SWITCH2_PIN 17
 
 IPAddress server(192,168,0,3);
 WiFiClient client;
@@ -30,7 +28,11 @@ WiFiClient client;
 //flag = 1 : LIGHT1 ON  LIGHT2 OFF
 //flag = 2 : LIGHT1 OFF LIGHT2 ON
 //flag = 3 : LIGHT1 ON  LIGHT2 ON
-int flag = -1; 
+int flag = 0;
+int check1 = 0; 
+int check2 = 0;
+int stat1 = 0;
+int stat2 = 0;
 
 void setup() {
   Serial.begin(BOADRATE);
@@ -50,9 +52,11 @@ void setup() {
   Serial.println("WiFi connected");
   
   pinMode(LIGHT1_PIN, OUTPUT);
-  pinMode(SWITCH1_PIN, INPUT);
   pinMode(LIGHT2_PIN, OUTPUT);
-  pinMode(SWITCH2_PIN, INPUT);
+  pinMode(SWITCH1_PIN, INPUT_PULLUP);
+  pinMode(SWITCH2_PIN, INPUT_PULLUP);
+  attachInterrupt(digitalPinToInterrupt(SWITCH1_PIN), toggleSW1, RISING);
+  attachInterrupt(digitalPinToInterrupt(SWITCH2_PIN), toggleSW2, RISING);
   
 }
 
@@ -62,10 +66,6 @@ void loop() {
 
     flag = communication(); 
     Serial.println(flag);
-    
-    //  if(digitalRead(SWITCH1_PIN) == HIGH){
-    //    flag = switchFlag();
-    //  }
     
     if(flag == 0){ lightOff(LIGHT1_PIN);  lightOff(LIGHT2_PIN); }
     if(flag == 1){ lightOn(LIGHT1_PIN);   lightOff(LIGHT2_PIN); }
@@ -79,46 +79,79 @@ void loop() {
   delay(500);
 }
 
-int communication(){
-  int value = 0;
-
-  //시리얼 통신코드
-  if(DEBUG == true){
-    if(Serial.available()){
-      value = Serial.read();  //int형
-      return value;
-    }
+void toggleSW1(){
+  if(stat1 == 0){
+    Serial.println("1 on");
+    digitalWrite(LIGHT1_PIN, HIGH);
+    stat1 = 1;
   }
+  else if(stat1 == 1){
+    Serial.println("1 off");
+     digitalWrite(LIGHT1_PIN, LOW);
+    stat1 = 0;
+  }
+  
+  if(flag == 0) flag = 1;
+  else if(flag == 1) flag = 0;
+  else if(flag == 2) flag = 3;
+  else if(flag == 3) flag = 2;
 
-  //WiFi 통신
-  if(DEBUG == false){
-    if(client.available()){
+  
+  Serial.println(flag);
+  delayMicroseconds(10000);
+}
+
+void toggleSW2(){
+  if(stat2 == 0){
+    Serial.println("2 on");
+    digitalWrite(LIGHT2_PIN, HIGH);
+    stat2 = 1;
+  }
+  else if(stat2 == 1){
+    Serial.println("2 off");
+    digitalWrite(LIGHT2_PIN, LOW);
+    stat2 = 0;
+  }
+  
+  if(flag == 0) flag = 2;
+  else if(flag == 1) flag = 3;
+  else if(flag == 2) flag = 0;
+  else if(flag == 3) flag = 1;
+  
+  
+  Serial.println(flag);
+  delayMicroseconds(10000);
+}
+
+int communication(){
+  if(client.available()){
 //      String to charArray code 
-      String buf = client.readStringUntil('\r');
+    String buf = client.readStringUntil('\r');
 
-      String cmd = buf.substring(0,2);
-      if(cmd == "L1"){
-        String str = buf.substring(3,4);
+    String cmd = buf.substring(0,2);
+    if(cmd == "L1"){
+      String str = buf.substring(3,4);
+      check1 = buf.substring(3,4).toInt();
+      if(check1 != check2){
+        check2 = check1;
         Serial.println(str);
         if(str == "0") return 0;
         else if(str == "1") return 1;
         else if(str == "2") return 2;
         else if(str == "3") return 3;
       }
-      return -1;
     }
+    check1 = flag;
+    return check1;
   }
 }
 
 // Light 상태 전송
 void sendStat(){
-  if(flag != -1) {
-    String str = "L1-" + String(flag);
-    client.write((char*)str.c_str(), str.length());
-    client.write('\r');
-    Serial.println(str);
-    flag = -1;
-  }
+  String str = "L1-" + String(flag);
+  client.write((char*)str.c_str(), str.length());
+  client.write('\r');
+  Serial.println(str);
 }
 
 //스위치 눌렸을 때 동작
