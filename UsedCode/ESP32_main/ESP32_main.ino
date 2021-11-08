@@ -102,7 +102,7 @@ void recvCmd() {
 void sendStat() {
   // light stat
 #ifdef DEBUG
-  Serial.print(" / light1: ");
+  Serial.print("light1: ");
   Serial.print(light[0]);
   Serial.print(" / light2: ");
   Serial.print(light[1]);
